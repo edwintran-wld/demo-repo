@@ -1,0 +1,60 @@
+{
+  "valid_credentials": {
+    "username": "admin",
+    "password": "P@ssword123"
+  },
+  "invalid_credentials": [
+    {
+      "username": "invalid@example.com",
+      "password": "wrongpassword",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "admin",
+      "password": "wrongpassword",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "empty_field_tests": [
+    {
+      "username": "",
+      "password": "P@ssword123",
+      "expected_error": "Username is required"
+    },
+    {
+      "username": "admin",
+      "password": "",
+      "expected_error": "Password is required"
+    },
+    {
+      "username": "",
+      "password": "",
+      "expected_error": "Username and password are required"
+    }
+  ],
+  "sql_injection_tests": [
+    {
+      "username": "' OR '1'='1",
+      "password": "anything",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "admin'; DROP TABLE users; --",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "xss_tests": [
+    {
+      "username": "<script>alert('XSS')</script>",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "test_urls": {
+    "base_url": "https://localhost:4443",
+    "login_url": "https://localhost:4443/c/login",
+    "dashboard_url": "https://localhost:4443/dashboard",
+    "forgot_password_url": "https://localhost:4443/forgot-password"
+  }
+}

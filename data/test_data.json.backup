@@ -1,0 +1,140 @@
+{
+  "valid_credentials": {
+    "username": "admin",
+    "password": "P@ssword123"
+  },
+  "invalid_credentials": [
+    {
+   "test_urls": {
+    "base_url": "https://localhost:4443",
+    "login_url": "https://localhost:4443/c/login",
+    "dashboard_url": "https://localhost:4443/dashboard", 
+    "forgot_password_url": "https://localhost:4443/forgot-password"
+  }username": "invalid@example.com",
+      "password": "wrongpassword",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "testuser@example.com",
+      "password": "wrongpassword",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "invalid@example.com",
+      "password": "ValidPassword123!",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "empty_field_tests": [
+    {
+      "username": "",
+      "password": "ValidPassword123!",
+      "expected_error": "Username is required"
+    },
+    {
+      "username": "testuser@example.com",
+      "password": "",
+      "expected_error": "Password is required"
+    },
+    {
+      "username": "",
+      "password": "",
+      "expected_error": "Username and password are required"
+    }
+  ],
+  "sql_injection_tests": [
+    {
+      "username": "' OR '1'='1",
+      "password": "anything",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "admin'; DROP TABLE users; --",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "' UNION SELECT * FROM users --",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "xss_tests": [
+    {
+      "username": "<script>alert('XSS')</script>",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "javascript:alert('XSS')",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "<img src=x onerror=alert('XSS')>",
+      "password": "password",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "special_characters_tests": [
+    {
+      "username": "test@user!@#$%^&*()",
+      "password": "Password!@#$%^&*()",
+      "expected_error": "Invalid username or password"
+    },
+    {
+      "username": "测试用户@example.com",
+      "password": "密码123",
+      "expected_error": "Invalid username or password"
+    }
+  ],
+  "long_input_tests": [
+    {
+      "username": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "password": "ValidPassword123!",
+      "expected_error": "Username too long"
+    },
+    {
+      "username": "testuser@example.com",
+      "password": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_error": "Password too long"
+    }
+  ],
+  "whitespace_tests": [
+    {
+      "username": "  testuser@example.com  ",
+      "password": "ValidPassword123!",
+      "should_login": true
+    },
+    {
+      "username": "testuser@example.com",
+      "password": "  ValidPassword123!  ",
+      "should_login": false
+    }
+  ],
+  "case_sensitivity_tests": [
+    {
+      "username": "TESTUSER@EXAMPLE.COM",
+      "password": "ValidPassword123!",
+      "should_login": false
+    },
+    {
+      "username": "testuser@example.com",
+      "password": "validpassword123!",
+      "should_login": false
+    }
+  ],
+  "browser_settings": {
+    "supported_browsers": ["chrome", "firefox", "edge", "safari"],
+    "default_browser": "chrome",
+    "headless_mode": false,
+    "implicit_wait": 10,
+    "explicit_wait": 20
+  },
+  "test_urls": {
+    "base_url": "https://localhost:4443",
+    "login_url": "https://localhost:4443/c/login",
+    "dashboard_url": "https://localhost:4443/dashboard",
+    "forgot_password_url": "https://localhost:4443/forgot-password"
+  }
+}
