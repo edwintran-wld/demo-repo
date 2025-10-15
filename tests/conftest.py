@@ -61,13 +61,14 @@ def base_url(request):
     return request.config.getoption("--base-url")
 
 @pytest.fixture(scope="function")
-def driver(browser_name, headless_mode):
+def driver(browser_name, headless_mode, request):
     """
     Create WebDriver instance for each test
     
     Args:
         browser_name (str): Browser name from command line
         headless_mode (bool): Headless mode from command line
+        request: pytest request object to access test results
         
     Yields:
         WebDriver: Selenium WebDriver instance
@@ -83,13 +84,17 @@ def driver(browser_name, headless_mode):
         raise
     finally:
         if driver_instance:
-            # Take screenshot on failure
-            test_name = os.environ.get('PYTEST_CURRENT_TEST', 'unknown_test')
-            screenshot_path = os.path.join(
-                Config.SCREENSHOT_PATH, 
-                f"{test_name.split('::')[-1]}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-            )
-            DriverFactory.take_screenshot(driver_instance, screenshot_path)
+            # Take screenshot ONLY on test failure
+            if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
+                test_name = request.node.name
+                screenshot_path = os.path.join(
+                    Config.SCREENSHOT_PATH, 
+                    f"{test_name}_FAILED_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+                )
+                DriverFactory.take_screenshot(driver_instance, screenshot_path)
+                logger.error(f"Test failed - Screenshot captured: {screenshot_path}")
+            else:
+                logger.info("Test passed - No screenshot taken")
             
             # Quit driver
             DriverFactory.quit_driver(driver_instance)
@@ -239,15 +244,24 @@ def pytest_configure(config):
         "markers", "security: mark test as security test"
     )
 
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """
-    Hook to capture test results and take screenshots on failure
+    Hook to capture test results and make them available to fixtures
+    This stores the test result so the driver fixture can check if test failed
     """
-    if call.when == "call":
-        if call.excinfo is not None:
-            # Test failed, screenshot should be taken in driver fixture cleanup
+    # Execute all other hooks to obtain the report object
+    outcome = yield
+    rep = outcome.get_result()
+    
+    # Store test results in the item object for fixture access
+    setattr(item, f"rep_{rep.when}", rep)
+    
+    # Log test results
+    if rep.when == "call":
+        if rep.failed:
             logger.error(f"Test failed: {item.nodeid}")
-        else:
+        elif rep.passed:
             logger.info(f"Test passed: {item.nodeid}")
 
 def pytest_html_report_title(report):

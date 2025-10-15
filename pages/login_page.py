@@ -270,7 +270,7 @@ class LoginPage(BasePage):
         Returns:
             bool: True if login successful (PRODUCT_LOGO is visible), False otherwise
         """
-        logger.info(f"Attempting login with username: {username}")
+        logger.info(f"Attempting login with username: {username} - Password: {password}")
         
         self.enter_username(username)
         self.enter_password(password)

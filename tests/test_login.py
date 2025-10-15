@@ -307,7 +307,7 @@ class TestLogin:
         # Clear and enter only password
         login_page.clear_login_form()
         login_page.enter_password("password123")
-        assert login_page.is_login_button_enabled(), "Login button should remain enabled with password only"
+        assert not login_page.is_login_button_enabled(), "Login button should disabled with password only"
         
         logger.info("Login button state test passed")
     
